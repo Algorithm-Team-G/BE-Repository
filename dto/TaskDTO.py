@@ -1,50 +1,42 @@
 import json
 
 
-class Task:
+class TaskDTO:
     def __init__(
             self,
-            id:int,
-            name:str,
+            title:str,
             jobId:int,
             begin:str,
             end:str,
             importance:int,
             level:int,
-            workerId:int
     ):
-        self.id = id
-        self.name = name
+        self.title = title
         self.jobId = jobId
         self.begin = begin
         self.end = end
         self.importance = importance
         self.level = level
-        self.workerId = workerId
 
     @staticmethod
-    def fromJson(rawData:str) -> 'Task':
+    def fromJson(rawData:str) -> 'TaskDTO':
         obj = json.loads(rawData)
-        return Task(
-            obj['id'],
-            obj['name'],
+        return TaskDTO(
+            obj['title'],
             obj['jobId'],
             obj['begin'],
             obj['end'],
             obj['importance'],
-            obj['level'],
-            obj['workerId']
+            obj['level']
         )
 
     def toJson(self) -> bytes:
         obj = {
-            'id': self.id,
-            'name': self.name,
+            'title': self.title,
             'jobId': self.jobId,
             'begin': self.begin,
             'end': self.end,
             'importance': self.importance,
-            'level': self.level,
-            'workerId': self.workerId
+            'level': self.level
         }
         return json.dumps(obj, ensure_ascii=False).encode('utf8')

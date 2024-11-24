@@ -1,6 +1,6 @@
 
 class Job:
-    def __init__(self, id:int, name:str, organizationId:int):
+    def __init__(self, id:int, name:str, teamId:int):
         self.id = id
         self.name = name
-        self.organizationId = organizationId
+        self.teamId = teamId
