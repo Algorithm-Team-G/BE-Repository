@@ -2,8 +2,8 @@ import json
 
 from flask import Response
 
-from dto.TaskDTO import TaskDTO
-from dto.WorkerTasksDTO import WorkerTasksDTO
+from dto.request.TaskDTO import TaskDTO
+from dto.request.WorkerTasksDTO import WorkerTasksDTO
 from repository.TaskRepository import TaskRepository
 
 

@@ -29,14 +29,3 @@ class TaskDTO:
             obj['importance'],
             obj['level']
         )
-
-    def toJson(self) -> bytes:
-        obj = {
-            'title': self.title,
-            'jobId': self.jobId,
-            'begin': self.begin,
-            'end': self.end,
-            'importance': self.importance,
-            'level': self.level
-        }
-        return json.dumps(obj, ensure_ascii=False).encode('utf8')

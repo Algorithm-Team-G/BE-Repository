@@ -13,9 +13,3 @@ DB_PORT = 3306
 DB_USER = "root"
 DB_PASSWORD = "1234"
 DB_NAME = 'kakaotalk'
-
-def connect_db(sql: str):
-    connection_string = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    engine = create_engine(connection_string)
-    df = pd.read_sql_query(sql, engine)
-    return df
