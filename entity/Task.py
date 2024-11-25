@@ -1,4 +1,7 @@
 import json
+from datetime import datetime
+
+from utils.DateFormat import DateFormat
 
 
 class Task:
@@ -6,15 +9,17 @@ class Task:
             self,
             id:int,
             name:str,
+            teamId:int,
             jobId:int,
-            begin:str,
-            end:str,
+            begin:datetime,
+            end:datetime,
             importance:int,
             level:int,
             workerId:int
     ):
         self.id = id
         self.name = name
+        self.teamId = teamId
         self.jobId = jobId
         self.begin = begin
         self.end = end
@@ -29,8 +34,8 @@ class Task:
             obj['id'],
             obj['name'],
             obj['jobId'],
-            obj['begin'],
-            obj['end'],
+            DateFormat.parse(obj['begin']),
+            DateFormat.parse(obj['end']),
             obj['importance'],
             obj['level'],
             obj['workerId']
@@ -41,8 +46,8 @@ class Task:
             'id': self.id,
             'name': self.name,
             'jobId': self.jobId,
-            'begin': self.begin,
-            'end': self.end,
+            'begin': DateFormat.format(self.begin),
+            'end': DateFormat.format(self.end),
             'importance': self.importance,
             'level': self.level,
             'workerId': self.workerId

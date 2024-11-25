@@ -53,13 +53,13 @@ class TaskRepository:
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')
 
-    def selectTasksByIDs(self, IDList:list[int]) -> dict:
+    def selectTasksByTeam(self, IDList:list[int], teamId:int) -> dict:
         sql = f"""
             select tk.id taskId, tk.name, tm.id teamId, j.id jobId, tk.begin, tk.end, tk.importance, tk.level
             from task tk
             join job j on tk.jobId = j.id
             join team tm on j.teamId = tm.id
-            where tk.id in {tuple(IDList)};"""
+            where tm.teamId = {teamId} and tk.id in {tuple(IDList)};"""
         result = self.instance.execute(sql)
         result['begin'] = result['begin'].astype(str)
         result['end'] = result['end'].astype(str)
