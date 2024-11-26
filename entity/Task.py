@@ -15,7 +15,7 @@ class Task:
             end:datetime,
             importance:int,
             level:int,
-            workerId:int
+            workerId:int=None
     ):
         self.id = id
         self.name = name
