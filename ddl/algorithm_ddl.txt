@@ -1,0 +1,35 @@
+﻿create database algorithm;
+use algorithm;
+
+
+create table T_team (
+        team_id INT primary key,
+    team_name varchar(30)
+);
+    
+create table T_job (
+        job_id INT primary key,
+    job_name varchar(30),
+    team_id INT,
+    foreign key (team_id) references T_team (team_id)
+    );
+
+
+create table T_worker (
+        worker_id INT primary key,
+    worker_name varchar(20),
+    job_id INT,
+    career INT,
+    max_task_count INT,
+    foreign key (job_id) references T_job(job_id)
+    );
+    
+create table T_task (
+        task_id INT primary key,
+    task_name varchar(200),
+    start_date timestamp,
+    end_date timestamp,
+    importance INT,
+    worker_id INT,
+    foreign key (worker_id) references T_worker (worker_id)
+    );
