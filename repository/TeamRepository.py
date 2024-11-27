@@ -1,3 +1,4 @@
+from entity.Team import Team
 from utils.DB import DB
 
 
@@ -6,9 +7,9 @@ class TeamRepository:
         self.instance = DB()
 
     def selectTeam(self) -> dict:
-        sql = """
+        sql = f"""
             select *
-            from team tm
-            order by tm.id asc;"""
+            from {Team.T_NAME} tm
+            order by tm.{Team.C_TEAM_ID} asc;"""
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')

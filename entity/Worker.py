@@ -1,7 +1,17 @@
 import json
 
+from entity.WorkerTaskCount import WorkerTaskCount
+
 
 class Worker:
+    T_NAME = "T_worker"
+    C_WORKER_ID = "worker_id"
+    C_WORKER_NAME = "worker_name"
+    C_TEAM_ID = "team_id"
+    C_JOB_ID = "job_id"
+    C_CAREER = "career"
+    C_MAX_TASK_COUNT = "max_task_count"
+
     def __init__(
             self,
             id:int,
@@ -11,7 +21,6 @@ class Worker:
             jobId:int,
             taskCount:int,
             maxTaskCount:int,
-            copied:int=0
     ):
         self.id = id
         self.name = name
@@ -20,30 +29,27 @@ class Worker:
         self.jobId = jobId,
         self.taskCount = taskCount
         self.maxTaskCount = maxTaskCount
-        self.copied = copied
 
     @staticmethod
     def fromJson(rawData:str) -> 'Worker':
         obj = json.loads(rawData)
         return Worker(
-            obj['id'],
-            obj['name'],
-            obj['career'],
-            obj['teamId'],
-            obj['jobId'],
-            obj['taskCount'],
-            obj['maxTaskCount'],
-            0
+            obj[Worker.C_WORKER_ID],
+            obj[Worker.C_WORKER_NAME],
+            obj[Worker.C_CAREER],
+            obj[Worker.C_TEAM_ID],
+            obj[Worker.C_JOB_ID],
+            obj[WorkerTaskCount.C_COUNT],
+            obj[Worker.C_MAX_TASK_COUNT]
         )
 
     def toJson(self) -> bytes:
         obj = {
-            'id': self.id,
-            'name': self.name,
-            'career': self.career,
-            'teamId': self.teamId,
-            'jobId': self.jobId,
-            'taskCount': self.taskCount,
-            'maxTaskCount': self.maxTaskCount
+            Worker.C_WORKER_ID: self.id,
+            Worker.C_WORKER_NAME: self.name,
+            Worker.C_CAREER: self.career,
+            Worker.C_TEAM_ID: self.teamId,
+            Worker.C_JOB_ID: self.jobId,
+            Worker.C_MAX_TASK_COUNT: self.maxTaskCount
         }
         return json.dumps(obj, ensure_ascii=False).encode('utf8')

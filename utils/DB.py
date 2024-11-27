@@ -1,3 +1,4 @@
+import pandas as pd
 import pymysql
 
 from common.Config import *
@@ -18,7 +19,7 @@ class DB:
 
     def execute(self, sql:str):
         with self.conn.cursor() as cur:
-            if sql.lower().startswith('select'):
+            if sql.strip().lower().startswith('select'):
                 cur.execute(sql)
                 result = cur.fetchall()
                 columns = [desc[0] for desc in cur.description]

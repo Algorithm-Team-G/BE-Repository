@@ -114,6 +114,7 @@ class Hungarian:
 
         zero_count = 0
 
+        ans_pos = []
         while zero_count < listing.shape[0]:  # 각 행과 열에서 0을 최대로 하는 곳을 찾습니다.
             ans_pos, RowCount, ColCount = self.__markMatrix(current_listing)
             zero_count = len(RowCount) + len(ColCount)

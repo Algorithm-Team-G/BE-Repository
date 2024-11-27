@@ -56,7 +56,7 @@ class Graph:
         1. T의 마감 날짜가 급한 경우
         2. T의 중요도가 높은 경우
         3. T의 작업 기간이 짧은 경우
-        4. T의 Level이 W의 career와 적절한 경우
+        4. W의 career 경력이 높은 경우
         5. W와 T의 직군이 같은 경우
 
         [점수 계산식]
@@ -73,7 +73,7 @@ class Graph:
         p3 = (task.end - task.begin).days * self.weights[2]
 
         # p4. T의 Level이 W의 career와 적절한 경우 (큰 게 이득)
-        p4 = worker.career / task.level * self.weights[3]
+        p4 = worker.career * self.weights[3]
 
         # p5. W와 T의 직군이 같은 경우 (작은 게 이득)
         p5 = (0 if worker.jobId == task.jobId else 1) * self.weights[4]

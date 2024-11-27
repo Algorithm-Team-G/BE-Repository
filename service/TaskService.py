@@ -43,7 +43,9 @@ class TaskService:
         teamData = TeamRepository().selectTeam()
         taskData = {}
         workerData = {}
-        for teamId, _ in teamData:
+        for team in teamData:
+            teamId = team['team_id']
+
             # 팀에 따라 분배해야 하는 업무 불러오기
             loadedTasks = TaskRepository().selectTasksByTeam(tasks, teamId)
             taskData[teamId] = [Task.fromJson(json.dumps(task, ensure_ascii=False)) for task in loadedTasks]
@@ -56,7 +58,10 @@ class TaskService:
         result = []
         for std in [Graph.deadline, Graph.importance, Graph.suitability]:
             case = {}
-            for teamId, teamName in teamData:
+            for team in teamData:
+                teamId = team['team_id']
+                teamName = team['team_name']
+
                 # graph 생성 & 알고리즘 실행
                 graph = Graph(std).create(workerData[teamId], taskData[teamId])
                 pos, minCost, matchingResult = Hungarian.solve(graph)
@@ -67,8 +72,8 @@ class TaskService:
                 teamDistribution['name'] = teamName
                 teamDistribution['workers'] = {}
                 for x, y in pos:
-                    workerId = graph.index[x]
-                    taskId = graph.columns[y]
+                    workerId = int(graph.index[x])
+                    taskId = int(graph.columns[y])
                     if workerId not in teamDistribution['workers']:
                         teamDistribution['workers'][workerId] = []
                     task = next(task for task in taskData[teamId] if task.id == taskId)
