@@ -8,13 +8,13 @@ class TaskRepository:
 
     def createNewTask(self, task:TaskDTO) -> str:
         sql = f"""
-            insert into task
+            insert into T_task (task_name, start_date, end_date, importance, worker_id)
             values (
                 '{task.title}',
-                {task.jobId},
-                '{task.begin}',
-                '{task.end}',
-                {task.importance},
+                {task.jobId},begin
+                '{task.begin}',end
+                '{task.end}',importance
+                {task.importance},job
                 {task.level}
             );"""
         count = self.instance.execute(sql)
@@ -31,12 +31,12 @@ class TaskRepository:
 
     def selectAssignedTasks(self) -> dict:
         sql = f"""
-            select tk.id, tk.name, tm.name team, j.name job, tk.begin, tk.end, w.name worker
-            from task tk
-            join job j on tk.jobId = j.id
-            join team tm on j.teamId = tm.id
-            join worker w on j.workerId = w.id
-            order by tm.id asc, worker asc, tk.begin asc, tk.end asc;"""
+            select ta.task_id, ta.task_name, t.team_name, j.job_name, ta.start_date, ta.end_date, w.worker_name from T_task ta
+        join T_worker w on ta.worker_id = w.worker_id
+        join T_job j on w.job_id = j.job_id
+        join T_team t on j.team_id = t.team_id
+        order by t.team_id asc, w.worker_name asc, ta.start_date asc, ta.end_date asc;
+        """
         result = self.instance.execute(sql)
         result['begin'] = result['begin'].astype(str)
         result['end'] = result['end'].astype(str)
@@ -44,22 +44,23 @@ class TaskRepository:
 
     def selectUnassignedTasks(self) -> dict:
         sql = f"""
-            select tk.id, tk.name, tm.name team
-            from task tk
-            join job j on t.jobId = j.id
-            join team tm on j.teamId = tm.id
-            where j.workerId is null
-            order by tk.id asc;"""
+            select * from T_task ta
+            join T_job j on ta.job_id = j.job_id
+            join T_team tm on j.team_id = tm.team_id
+            where ta.worker_id is null
+            order by ta.task_id asc;
+"""
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')
 
     def selectTasksByTeam(self, IDList:list[int], teamId:int) -> dict:
         sql = f"""
-            select tk.id taskId, tk.name, tm.id teamId, j.id jobId, tk.begin, tk.end, tk.importance, tk.level
-            from task tk
-            join job j on tk.jobId = j.id
-            join team tm on j.teamId = tm.id
-            where tm.teamId = {teamId} and tk.id in {tuple(IDList)};"""
+            select * from T_task ta
+            join T_job j on ta.job_id = j.job_id
+            join T_team t on j.team_id = t.team_id
+            where t.team_id = {teamId} and ta.task_id in {tuple(IDList)};
+"""
+        
         result = self.instance.execute(sql)
         result['begin'] = result['begin'].astype(str)
         result['end'] = result['end'].astype(str)

@@ -9,9 +9,9 @@ class WorkerRepository:
     def selectFreeWorkersByTeam(self, teamId:int) -> dict:
         sql = f"""
             select *
-            from worker w
-            where w.teamId = {teamId}
-            order by w.id asc;"""
+            from T_worker w
+            where w.team_id = {teamId}
+            order by w.team_id asc;"""
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')
 

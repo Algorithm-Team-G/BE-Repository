@@ -8,7 +8,7 @@ class TeamRepository:
     def selectTeam(self) -> dict:
         sql = """
             select *
-            from team tm
-            order by tm.id asc;"""
+            from T_team tm
+            order by tm.team_id asc;"""
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')
