@@ -7,34 +7,21 @@ from entity.Worker import Worker
 
 
 class Graph:
-    # 테이블 생성 시, 데이터 정렬의 기준
-    taskCount = 0
-    career = 1
-    both = 2
-
     # 가중치 계산 시, 가중치의 기준
     deadline = 0
     importance = 1
     suitability = 2
 
-    def __init__(self, sortingStandard:int, weightStandard:int):
-        if sortingStandard not in [0, 1, 2]:
-            raise ValueError("Invalid sortingStandard value")
-        if weightStandard not in [0, 1, 2]:
+    def __init__(self, std:int):
+        if std not in [0, 1, 2]:
             raise ValueError("Invalid weightStandard value")
 
-        self.sortingFunc = None
-        if sortingStandard == Graph.taskCount:
-            self.sortingFunc = lambda x: x.taskCount
-        elif sortingStandard == Graph.career:
-            self.sortingFunc = lambda x: x.career
-        else:
-            self.sortingFunc = lambda x: (x.taskCount, x.career)
+        self.sortingFunc = lambda x: (x.taskCount, x.career)
 
         self.weights = []
-        if weightStandard == Graph.deadline:
+        if std == Graph.deadline:
             self.weights = [1.0, 0.5, 0.7, 0.7, 1]
-        elif weightStandard == Graph.importance:
+        elif std == Graph.importance:
             self.weights = [0.7, 1.0, 0.5, 0.7, 1]
         else:
             self.weights = [0.7, 0.7, 0.7, 1.0, 1]

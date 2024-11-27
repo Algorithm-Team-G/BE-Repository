@@ -9,6 +9,7 @@ from entity.Worker import Worker
 from repository.TaskRepository import TaskRepository
 from repository.TeamRepository import TeamRepository
 from repository.WorkerRepository import WorkerRepository
+from utils.Graph import Graph
 from utils.Hungarian import Hungarian
 
 
@@ -27,13 +28,15 @@ class TaskService:
         return Response(result, content_type='application/json; charset=utf-8')
 
     def addTask(self, task:TaskDTO):
-        self.repo.createNewTask(task)
+        result = self.repo.createNewTask(task)
+        result = json.dumps(result, ensure_ascii=False).encode('utf8')
+        return Response(result, content_type='application/json; charset=utf-8')
 
     def assignTask(self, workerTaskList:list[WorkerTasksDTO]):
         for workerTask in workerTaskList:
             for taskId in workerTask.tasks:
                 self.repo.assignTask(taskId, workerTask.workerId)
-
+        return Response(status=200)
 
     def recommendDistributionTasks(self, tasks:list[int]):
         # 조직에 개설된 팀 ID 불러오기
@@ -49,24 +52,30 @@ class TaskService:
             loadedWorkers = WorkerRepository().selectFreeWorkersByTeam(teamId)
             workerData[teamId] = [Worker.fromJson(json.dumps(worker, ensure_ascii=False)) for worker in loadedWorkers]
 
-        # 팀별로 업무 분배
-        result = {}
-        for teamId, teamName in teamData:
-            graph = Hungarian.createGraph(workerData[teamId], taskData[teamId])
-            pos, minCost, matchingResult = Hungarian.solve(graph)
-            pos.sort(key = lambda x : x[0])
+        # 기준에 따라 업무 분배
+        result = []
+        for std in [Graph.deadline, Graph.importance, Graph.suitability]:
+            case = {}
+            for teamId, teamName in teamData:
+                # graph 생성 & 알고리즘 실행
+                graph = Graph(std).create(workerData[teamId], taskData[teamId])
+                pos, minCost, matchingResult = Hungarian.solve(graph)
+                pos.sort(key = lambda x : x[0])
 
-            teamDistribution = {}
-            teamDistribution['name'] = teamName
-            teamDistribution['workers'] = {}
-            for x, y in pos:
-                workerId = graph.index[x]
-                taskId = graph.columns[y]
+                # formatting & save
+                teamDistribution = {}
+                teamDistribution['name'] = teamName
+                teamDistribution['workers'] = {}
+                for x, y in pos:
+                    workerId = graph.index[x]
+                    taskId = graph.columns[y]
+                    if workerId not in teamDistribution['workers']:
+                        teamDistribution['workers'][workerId] = []
+                    task = next(task for task in taskData[teamId] if task.id == taskId)
+                    teamDistribution['workers'][workerId].append({'id': taskId, 'name': task.name})
+                case[teamId] = teamDistribution
 
-                if workerId not in teamDistribution['workers']:
-                    teamDistribution['workers'][workerId] = []
+            result.append(case)
 
-                task = next(task for task in taskData[teamId] if task.id == taskId)
-                teamDistribution['workers'][workerId].append({'id': taskId, 'name': task.name})
-            result[teamId] = teamDistribution
-        return result
+        result = json.dumps(result, ensure_ascii=False).encode('utf8')
+        return Response(result, content_type='application/json; charset=utf-8')
