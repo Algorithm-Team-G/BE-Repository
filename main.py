@@ -16,9 +16,10 @@ from datetime import datetime, timedelta
 
 from entity.Task import Task
 from entity.Worker import Worker
+from utils.Graph import Graph
 from utils.Hungarian import Hungarian
 
-worker_size = 4
+worker_size = 6
 task_size = 6
 
 workers = []
@@ -57,8 +58,10 @@ for i in range(task_size):
 """)
 
 print("================== graph =====================")
-graph = Hungarian.createGraph(workers, tasks)
-print(graph)
+sortingStandard = int(input("정렬 기준을 선택해주세요. (0: taskCount, 1: career, 2: both): "))
+weightStandard = int(input("가중치 기준을 선택해주세요. (0: deadline, 1: importance, 2: suitability): "))
+graph = Graph(sortingStandard, weightStandard).create(workers, tasks)
+print(f"\n그래프:\n{graph}")
 
 pos, minCost, matchingResult = Hungarian.solve(graph)
 

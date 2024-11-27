@@ -1,76 +1,13 @@
-import random
-from datetime import datetime
-
 import numpy as np
 from pandas import DataFrame
 
-from entity.Task import Task
-from entity.Worker import Worker
-
-
 class Hungarian:
-    @staticmethod
-    def createGraph(workers: list[Worker], tasks: list[Task]) -> DataFrame:
-        workerCount = len(workers)
-        taskCount = len(tasks)
-        if workerCount > taskCount:
-            workers.sort(key=lambda x: (x.taskCount, x.career))
-            workers = workers[:taskCount]
-        elif workerCount < taskCount:
-            workers.sort(key=lambda x: (x.taskCount, x.career))
-            while workerCount < taskCount:
-                diff = taskCount - workerCount
-                diff = diff if diff < len(workers) else len(workers)
-                workers += workers[:diff]
-                workerCount += diff
-
-        instance = Hungarian()
-        graph = DataFrame(0.0, index=[worker.id for worker in workers], columns=[task.id for task in tasks])
-        # graph = DataFrame(0.0, index=[worker for worker in workers], columns=[task for task in tasks])
-        for worker in workers:
-            for task in tasks:
-                graph.at[worker.id, task.id] = instance.__getScore(worker, task)
-                # graph.at[worker, task] = random.randint(1, 20)
-        return graph
-
     @staticmethod
     def solve(graph:DataFrame) -> tuple:
         instance = Hungarian()
         pos = instance.__mainAlgorithm(graph.copy())
         total, ans_matrix = instance.__findAnswer(graph.copy(), pos)
         return pos, total, ans_matrix
-
-    def __getScore(self, worker: Worker, task: Task) -> float:
-        """
-        워커 W에거 업무 T를 분배하는 것이 적절한지 계산하는 함수
-
-        [점수를 계산하는 지표]
-        1. T의 마감 날짜가 급한 경우
-        2. T의 중요도가 높은 경우
-        3. T의 작업 기간이 짧은 경우
-        4. T의 Level이 W의 career와 적절한 경우
-        5. W와 T의 직군이 같은 경우
-
-        [점수 계산식]
-        (* 가중치를 최소화하는 방향으로)
-        """
-
-        # p1. T의 마감 날짜가 급한 경우 (작은 게 이득)
-        p1 = (task.end - datetime.today()).days
-
-        # p2. T의 중요도가 높은 경우 (큰 게 이득)
-        p2 = task.importance
-
-        # p3. T의 작업 기간이 짧은 경우 (작은 게 이득)
-        p3 = (task.end - task.begin).days
-
-        # p4. T의 Level이 W의 career와 적절한 경우 (큰 게 이득)
-        p4 = worker.career / task.level
-
-        # p5. W와 T의 직군이 같은 경우 (작은 게 이득)
-        p5 = 0 if worker.jobId == task.jobId else 1
-
-        return (p1 + p3 + p5) / (p2 + p4)
 
     def __minZeroRow(self, zeros, coorZero):
         min_row = [99999, -1]
