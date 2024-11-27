@@ -25,11 +25,12 @@ create table T_worker (
     );
     
 create table T_task (
-        task_id INT AUTO_INCREMENT primary key,
+    task_id INT AUTO_INCREMENT primary key,
     task_name varchar(200),
     start_date timestamp,
     end_date timestamp,
     importance INT,
+    job_id INT,
     worker_id INT,
     foreign key (worker_id) references T_worker (worker_id)
     );
