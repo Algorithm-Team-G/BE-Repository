@@ -1,5 +1,7 @@
-create database algorithm;
-use algorithm;
+drop database algorithm;
+drop database algorithm_project;
+create database algorithm_project;
+use algorithm_project;
 
 
 create table T_team (
@@ -34,3 +36,10 @@ create table T_task (
     worker_id INT,
     foreign key (worker_id) references T_worker (worker_id)
     );
+
+create view t_worker_task_count as (
+	select t.worker_id, count(*) count
+    from t_task t
+    group by t.worker_id
+    having t.worker_id is not null
+);
