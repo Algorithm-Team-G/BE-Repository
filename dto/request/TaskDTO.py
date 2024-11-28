@@ -1,4 +1,4 @@
-import json
+from exception.ValueException import DTOException
 
 
 class TaskDTO:
@@ -10,6 +10,12 @@ class TaskDTO:
             end:str,
             importance:int,
     ):
+        if (not isinstance(title, str)
+            or not isinstance(jobId, int)
+            or not isinstance(begin, str)
+            or not isinstance(end, str)
+            or not isinstance(importance, int)):
+            raise DTOException('TaskDTO', 'Invalid Parameters')
         self.title = title
         self.jobId = jobId
         self.begin = begin
@@ -18,6 +24,13 @@ class TaskDTO:
 
     @staticmethod
     def fromJson(obj:dict) -> 'TaskDTO':
+        if (obj is None
+            or not isinstance(obj.get("begin"), str)
+            or not isinstance(obj.get("end"), str)
+            or not isinstance(obj.get("importance"), int)
+            or not isinstance(obj.get("jobId"), int)
+            or not isinstance(obj.get("title"), str)):
+            raise DTOException("TaskDTO", "Invalid Parameters")
         return TaskDTO(
             obj['title'],
             obj['jobId'],
