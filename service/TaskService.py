@@ -4,11 +4,13 @@ from flask import Response
 
 from dto.request.TaskDTO import TaskDTO
 from dto.request.WorkerTasksDTO import WorkerTasksDTO
+from dto.response.UnassignedTaskDTO import UnassignedTaskDTO
 from entity.Task import Task
 from entity.Worker import Worker
 from repository.TaskRepository import TaskRepository
 from repository.TeamRepository import TeamRepository
 from repository.WorkerRepository import WorkerRepository
+from utils.DateFormat import DateFormat
 from utils.Graph import Graph
 from utils.Hungarian import Hungarian
 
@@ -18,13 +20,31 @@ class TaskService:
         self.repo = TaskRepository()
 
     def getAssignedTaskList(self) -> Response:
-        result = self.repo.selectAssignedTasks()
+        teamData = TeamRepository().selectTeam()
+        result = {}
+        for team in teamData:
+            teamId = team['team_id']
+            result[teamId] = {"name": team['team_name']}
+            tasksOfWorker = {}
+            workers = WorkerRepository().selectActiveWorker(teamId)
+            for worker in workers:
+                workerId = worker['worker_id']
+                tasksOfWorker[workerId] = {"name": worker['worker_name']}
+                tasks = self.repo.selectAssignedTasks(workerId)
+                for task in tasks:
+                    begin = DateFormat.parse(task['begin'])
+                    end = DateFormat.parse(task['end'])
+                    task['duration'] = (end - begin).days
+                    task.pop('end')
+                tasksOfWorker[workerId]['tasks'] = tasks
+            result[teamId]['workers'] = tasksOfWorker
         result = json.dumps(result, ensure_ascii=False).encode('utf8')
         return Response(result, content_type='application/json; charset=utf-8')
 
     def getUnassignedTaskList(self) -> Response:
         result = self.repo.selectUnassignedTasks()
-        result = json.dumps(result, ensure_ascii=False).encode('utf8')
+        result = [UnassignedTaskDTO.fromJson(task) for task in result]
+        result = json.dumps([task.toDict() for task in result], ensure_ascii=False).encode('utf8')
         return Response(result, content_type='application/json; charset=utf-8')
 
     def addTask(self, task:TaskDTO):

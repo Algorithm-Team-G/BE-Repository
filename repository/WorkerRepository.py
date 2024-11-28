@@ -12,30 +12,31 @@ class WorkerRepository:
 
     def selectFreeWorkersByTeam(self, teamId:int) -> dict:
         sql = f"""
-            select *
-            from {Worker.T_NAME} w
-            join {Job.T_NAME} j on w.{Worker.C_JOB_ID} = j.{Job.C_JOB_ID}
-            join {Team.T_NAME} tm on j.{Job.C_TEAM_ID} = tm.{Team.C_TEAM_ID}
-            join {WorkerTaskCount.T_NAME} wtc on w.{Worker.C_WORKER_ID} = wtc.{Worker.C_WORKER_ID}
-            where tm.{Team.C_TEAM_ID} = {teamId}
-            order by w.{Worker.C_WORKER_ID} asc;"""
+            select 
+				w.worker_id,
+                w.worker_name,
+                j.team_id,
+                tm.team_name,
+                w.job_id,
+                j.job_name,
+                w.career,
+                w.max_task_count,
+                wtc.count
+            from T_worker w
+            join T_job j on w.job_id = j.job_id
+            join T_team tm on j.team_id = tm.team_id
+            join T_worker_task_count wtc on w.worker_id = wtc.worker_id
+            where tm.team_id = 1
+            order by w.worker_id asc;"""
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')
 
-    # def assignTask(self, taskId:int, workerId:int) -> str:
-    #     sql = f"""
-    #         update worker w
-    #         join task tk on j.id = tk.jobId
-    #         set j.workerId = {workerId}
-    #         where tk.id = {taskId};"""
-    #     count = self.instance.execute(sql)
-    #     return f"updated {count} row(s)."
-
-    # def depriveTask(self, taskId:int, workerId:int) -> str:
-    #     sql = f"""
-    #         update job j
-    #         join task tk on j.id = tk.jobId
-    #         set j.workerId = null
-    #         where tk.id = {taskId};"""
-    #     count = self.instance.execute(sql)
-    #     return f"updated {count} row(s)."
+    def selectActiveWorker(self, teamId:int) -> dict:
+        sql = f"""
+            select w.worker_id, w.worker_name
+            from T_worker w
+            join T_job j on w.job_id = j.job_id
+            join T_worker_task_count wtc on w.worker_id = wtc.worker_id
+            where j.team_id = {teamId} and wtc.count > 0"""
+        result = self.instance.execute(sql)
+        return result.to_dict(orient='records')

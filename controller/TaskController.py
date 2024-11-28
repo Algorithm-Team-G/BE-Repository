@@ -29,7 +29,7 @@ class TaskAssignController(Resource):
             request_json = request.get_json()
             params = []
             for workerId, tasks in request_json.items():
-                params.append(WorkerTasksDTO(workerId, tasks))
+                params.append(WorkerTasksDTO(int(workerId), tasks))
             return TaskService().assignTask(params)
         except DTOException as e:
             return BadRequestException(e.message)
