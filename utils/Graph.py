@@ -20,11 +20,11 @@ class Graph:
 
         self.weights = []
         if std == Graph.deadline:
-            self.weights = [1.0, 0.5, 0.7, 0.7, 1]
+            self.weights = [0.1, 0.5, 0.3, 0.5, 1]
         elif std == Graph.importance:
-            self.weights = [0.7, 1.0, 0.5, 0.7, 1]
+            self.weights = [0.2, 1.0, 0.5, 0.7, 1]
         else:
-            self.weights = [0.7, 0.7, 0.7, 1.0, 1]
+            self.weights = [0.4, 0.8, 0.4, 1.0, 1]
 
     def create(self, workers: list[Worker], tasks: list[Task]) -> DataFrame:
         workerCount = len(workers)
@@ -53,11 +53,11 @@ class Graph:
         워커 W에거 업무 T를 분배하는 것이 적절한지 계산하는 함수
 
         [점수를 계산하는 지표]
-        1. T의 마감 날짜가 급한 경우
-        2. T의 중요도가 높은 경우
-        3. T의 작업 기간이 짧은 경우
-        4. W의 career 경력이 높은 경우
-        5. W와 T의 직군이 같은 경우
+        1. T의 마감 날짜가 급한 경우 (S)
+        2. T의 중요도가 높은 경우 (B)
+        3. T의 작업 기간이 짧은 경우 (S)
+        4. W의 career 경력이 높은 경우 (B)
+        5. W와 T의 직군이 같은 경우 (S)
 
         [점수 계산식]
         (* 가중치를 최소화하는 방향으로)
@@ -73,7 +73,7 @@ class Graph:
         p3 = (task.end - task.begin).days * self.weights[2]
 
         # p4. T의 Level이 W의 career와 적절한 경우 (큰 게 이득)
-        p4 = worker.career * self.weights[3]
+        p4 = worker.career / task.level * self.weights[3]
 
         # p5. W와 T의 직군이 같은 경우 (작은 게 이득)
         p5 = (0 if worker.jobId == task.jobId else 1) * self.weights[4]

@@ -78,12 +78,15 @@ class TaskService:
         result = []
         for std in [Graph.deadline, Graph.importance, Graph.suitability]:
             case = {}
+            # print(f"\nStandard: {std}")
             for team in teamData:
                 teamId = team['team_id']
                 teamName = team['team_name']
 
                 # graph 생성 & 알고리즘 실행
                 graph = Graph(std).create(workerData[teamId], taskData[teamId])
+                # print(f"Team: {teamName}")
+                # print(graph.to_string())
                 pos, minCost, matchingResult = Hungarian.solve(graph)
                 pos.sort(key = lambda x : x[0])
 

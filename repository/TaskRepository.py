@@ -18,6 +18,7 @@ class TaskRepository:
                 {Task.C_JOB_ID},
                 {Task.C_START_DATE},
                 {Task.C_END_DATE},
+                {Task.C_LEVEL},
                 {Task.C_IMPORTANCE}
             )
             values (
@@ -25,6 +26,7 @@ class TaskRepository:
                 {task.jobId},
                 '{task.begin}',
                 '{task.end}',
+                {task.level},
                 {task.importance}
             );"""
         count = self.instance.execute(sql)
@@ -73,6 +75,7 @@ class TaskRepository:
                 j.{Job.C_JOB_ID} job_id,
                 tk.{Task.C_START_DATE} start_date,
                 tk.{Task.C_END_DATE} end_date,
+                tk.{Task.C_LEVEL} level,
                 tk.{Task.C_IMPORTANCE} importance
             from {Task.T_NAME} tk
             join {Job.T_NAME} j on tk.{Task.C_JOB_ID} = j.{Job.C_JOB_ID}

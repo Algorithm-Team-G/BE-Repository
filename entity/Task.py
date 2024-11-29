@@ -12,6 +12,7 @@ class Task:
     C_JOB_ID = "job_id"
     C_START_DATE = "start_date"
     C_END_DATE = "end_date"
+    C_LEVEL = "level"
     C_IMPORTANCE = "importance"
     C_WORKER_ID = "worker_id"
 
@@ -23,6 +24,7 @@ class Task:
             jobId:int,
             begin:datetime,
             end:datetime,
+            level:int,
             importance:int,
             workerId:int=None
     ):
@@ -32,6 +34,7 @@ class Task:
         self.jobId = jobId
         self.begin = begin
         self.end = end
+        self.level = level
         self.importance = importance
         self.workerId = workerId
 
@@ -46,6 +49,7 @@ class Task:
             obj[Task.C_JOB_ID],
             DateFormat.parse(obj[Task.C_START_DATE]),
             DateFormat.parse(obj[Task.C_END_DATE]),
+            obj[Task.C_LEVEL],
             obj[Task.C_IMPORTANCE],
             workerId
         )
@@ -57,6 +61,7 @@ class Task:
             Task.C_JOB_ID: self.jobId,
             Task.C_START_DATE: DateFormat.format(self.begin),
             Task.C_END_DATE: DateFormat.format(self.end),
+            Task.C_LEVEL: self.level,
             Task.C_IMPORTANCE: self.importance,
             Task.C_WORKER_ID: self.workerId
         }

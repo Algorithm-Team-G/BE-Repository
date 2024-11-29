@@ -26,7 +26,7 @@ class WorkerRepository:
             join T_job j on w.job_id = j.job_id
             join T_team tm on j.team_id = tm.team_id
             join T_worker_task_count wtc on w.worker_id = wtc.worker_id
-            where tm.team_id = 1
+            where tm.team_id = {teamId}
             order by w.worker_id asc;"""
         result = self.instance.execute(sql)
         return result.to_dict(orient='records')
