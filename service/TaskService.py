@@ -98,9 +98,12 @@ class TaskService:
                     workerId = int(graph.index[x])
                     taskId = int(graph.columns[y])
                     if workerId not in teamDistribution['workers']:
-                        teamDistribution['workers'][workerId] = []
+                        teamDistribution['workers'][workerId] = {}
+                        workerName = next(worker.name for worker in workerData[teamId] if worker.id == workerId)
+                        teamDistribution['workers'][workerId]['name'] = workerName
+                        teamDistribution['workers'][workerId]['tasks'] = []
                     task = next(task for task in taskData[teamId] if task.id == taskId)
-                    teamDistribution['workers'][workerId].append({'id': taskId, 'name': task.name})
+                    teamDistribution['workers'][workerId]['tasks'].append({'id': taskId, 'name': task.name})
                 case[teamId] = teamDistribution
 
             result.append(case)
