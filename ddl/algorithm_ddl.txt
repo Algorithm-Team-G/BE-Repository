@@ -36,8 +36,8 @@ create table T_task (
 );
 
 create view t_worker_task_count as (
-	select t.worker_id, count(*) count
-    from t_task t
-    group by t.worker_id
-    having t.worker_id is not null
+	select w.worker_id, (ifnull(count(*), 0)-1) count
+	from t_worker w
+	left join t_task t on w.worker_id = t.worker_id
+	group by w.worker_id
 );
